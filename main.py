@@ -1,12 +1,9 @@
-"""TODO: fill this docstring in"""
-import numpy as np
+"""The main file where the neural network is loaded and a CLI provided to interact with it."""
 import network
-import loader
-
 import questionary
 
 
-net = network.Network(28 * 28, [16, 16, 10])
+net = network.Network([784, 16, 16, 10])
 
 if __name__ == '__main__':
     while True:
@@ -20,8 +17,7 @@ if __name__ == '__main__':
         if answer == "Train":
             print("Train neural net")
         elif answer == "Evaluate":
-            # print("Evaluate neural net")
-            print(net.evaluate(np.array([1] * 28 * 28)))
+            print("Evaluate neural net")
         elif answer == "Exit":
             print("Exiting...")
             exit(0)

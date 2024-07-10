@@ -9,16 +9,13 @@ class Neuron:
     """A neuron in the network.
 
     Attributes:
-        n_inputs: The number of inputs from the previous layer or the input neurons.
         weights: An array storing the weights for each connection to a neuron in the previous layer.
         bias: The bias applied for this neuron.
     """
-    n_inputs: int
     weights: np.ndarray
     bias: float
 
     def __init__(self, n_inputs: int):
-        self.n_inputs = n_inputs
         self.weights = np.random.randn(n_inputs)
         self.bias = np.random.randn()
 
@@ -30,19 +27,22 @@ class Neuron:
          - The dimensions of ``inputs`` is the same as the dimensions of ``self.weights``
         """
         total = np.dot(self.weights, inputs) + self.bias
-        return sigmoid(total)
+        return total
 
 
 class Layer:
     """A single layer of neurons in the network.
 
     Attributes:
-        neurons: the neurons in this layer.
+        input_size: The number of weights from the input or previous layer.
+        neurons: The neurons in this layer.
     """
+    input_size: int
     neurons: tuple[Neuron]
 
-    def __init__(self, size: int, prev_layer_size: int):
-        self.neurons = tuple(Neuron(prev_layer_size) for _ in range(0, size))
+    def __init__(self, size: int, input_size: int):
+        self.input_size = input_size
+        self.neurons = tuple(Neuron(input_size) for _ in range(0, size))
 
     def feedforward(self, inputs: np.ndarray) -> np.ndarray:
         """Return the corresponding outputs of this layer when the input values are applied
@@ -51,6 +51,10 @@ class Layer:
         Preconditions:
          - The dimensions of ``inputs`` is the same as the dimensions of ``weights`` for every neuron
         """
+        return np.array([sigmoid(neuron.feedforward(inputs)) for neuron in self.neurons])
+
+    def weighted(self, inputs: np.ndarray) -> np.ndarray:
+        """Return the weighted activation of this layer."""
         return np.array([neuron.feedforward(inputs) for neuron in self.neurons])
 
 
@@ -133,14 +137,63 @@ class Network:
                            10-dimensional numpy array representing the unit vector of the digit for x.
         :param learning_rate: The learning rate of the network.
         """
-        return
+        # initialise matrices for gradients of weights and biases per layer
+        nabla_w = [np.zeros((layer.input_size, len(layer.neurons))) for layer in self.layers]
+        nabla_b = [np.zeros(len(layer.neurons)) for layer in self.layers]
+
+        # apply backpropagation to get updated weights and biases
+        for x, y in mini_batch:
+            delta_nabla_w, delta_nabla_b = self.backpropagate(x, y)
+            nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+            nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+
+        # update weights and biases based on mini batch
+        for layer_weights, layer_biases, layer in zip(nabla_w, nabla_b, self.layers):
+            for weights, bias, neuron in zip(layer_weights, layer_biases, layer.neurons):
+                neuron.weights -= (learning_rate / len(mini_batch)) * weights
+                neuron.bias -= (learning_rate / len(mini_batch)) * bias
+
+    def backpropagate(self, x: np.ndarray[np.ndarray[int]], y: np.ndarray[int]) -> tuple:
+        """TODO: fill this docstring in"""
+        nabla_w = [np.zeros((layer.input_size, len(layer.neurons))) for layer in self.layers]
+        nabla_b = [np.zeros(len(layer.neurons)) for layer in self.layers]
+
+        # compute the activations and weighted inputs of each neuron through the network
+        input = x
+        activations = []
+        zs = []
+        for layer in self.layers:
+            z = layer.weighted(input)
+            input = layer.feedforward(input)
+            activations.append(input)
+            zs.append(z)
+
+        # at this point, input is the final output of the network and z is the final weighted input of the network.
+        # we can use it to compute the error in the output layer.
+        delta = cost_derivative(input, y) * sigmoid_prime(zs[-1])
+        nabla_w[-1] = np.dot(delta, activations[-2].transpose())
+        nabla_b[-1] = delta
+
+        # backpropagate delta through the layers
+        for i in range(len(self.layers) - 2, -1, -1):
+            weights = np.array([[weight for weight in neuron.weights] for neuron in self.layers[i].neurons]).transpose()
+            delta = np.dot(delta, weights) * sigmoid_prime(zs[i])
+            nabla_w[-1] = np.dot(delta, activations[-i].transpose())
+            nabla_b[-1] = delta
+
+        return nabla_w, nabla_b
 
 
-def sigmoid(x: float) -> float:
+def sigmoid(x: float | np.ndarray) -> np.ndarray:
     """Apply the sigmoid function to x."""
     return 1 / (1 + np.exp(-x))
 
 
-def sigmoid_prime(x: float) -> float:
+def sigmoid_prime(x: float | np.ndarray) -> np.ndarray:
     """Apply the derivative of the sigmoid function to x."""
     return sigmoid(x) * (1 - sigmoid(x))
+
+
+def cost_derivative(activations: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Return the gradient of the cost function with respect to the output activations."""
+    return activations - y
