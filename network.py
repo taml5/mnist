@@ -140,7 +140,7 @@ class Network:
         """
         # initialise matrices for gradients of weights and biases per layer
         nabla_w = [np.zeros((len(layer.neurons), layer.input_size)) for layer in self.layers]
-        nabla_b = [np.zeros(784), np.zeros(16), np.zeros(10)]
+        nabla_b = [np.zeros(len(layer.neurons)) for layer in self.layers]
 
         # apply backpropagation to get updated weights and biases
         for x, y in mini_batch:
@@ -165,8 +165,9 @@ class Network:
 
         # compute the activations and weighted inputs of each neuron through the network
         input = x
-        activations = []
-        zs = []
+        activations = [x]  # first "activation" is the input layer aka the input
+        zs = []  # no weighted input for the first layer
+        # forward propagate: store weighted inputs and activations
         for layer in self.layers:
             z = layer.weighted(input)
             input = layer.feedforward(input)
@@ -180,18 +181,14 @@ class Network:
         nabla_b[-1] = delta
 
         # backpropagate delta through the layers
-        for i in range(len(self.layers) - 2, 0, -1):
+        for i in range(len(self.layers) - 2, -1, -1):
             # get delta and weight of (l + 1)th layer
             weights = np.array([[weight for weight in neuron.weights] for neuron in self.layers[i + 1].neurons])
             delta = np.dot(weights.transpose(), delta) * sigmoid_prime(zs[i])
 
-            nabla_w[i] = np.dot(delta, activations[i].transpose()).transpose()
+            # apply backpropagation algorithms
+            nabla_w[i] = np.dot(delta, activations[i].transpose())
             nabla_b[i] = delta
-
-        weights = np.array([[weight for weight in neuron.weights] for neuron in self.layers[0].neurons])
-        delta = np.dot(weights.transpose(), delta) * sigmoid_prime(x)
-        nabla_w[0] = np.dot(delta, activations[0].transpose()).transpose()
-        nabla_b[0] = delta
 
         return nabla_w, nabla_b
 
