@@ -115,7 +115,7 @@ class Network:
                           the corresponding classifaction of x.
         """
         print("Starting training...")
-        for i in range(0, epochs):
+        for i in range(1, epochs + 1):
             random.shuffle(training_data)
             mini_batches = [training_data[j:j + batch_size] for j in range(0, len(training_data), batch_size)]
 
@@ -123,9 +123,9 @@ class Network:
                 self.train_on_batch(mini_batch, learning_rate)
 
             if test_data is not None:
-                print(f"Epoch {i}: {self.evaluate(test_data)} out of {len(test_data)} inputs")
+                print(f"Epoch {i} of {epochs}: {self.evaluate(test_data)} out of {len(test_data)} inputs")
             else:
-                print(f"Epoch {i} completed")
+                print(f"Epoch {i} of {epochs} completed")
 
     def train_on_batch(self,
                        mini_batch: list[tuple[np.ndarray[np.ndarray[int]], np.ndarray[int]]],
