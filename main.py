@@ -1,8 +1,9 @@
 """The main file where the neural network is loaded and a CLI provided to interact with it."""
 import network
+import loader
 import questionary
 
-
+training_data, validation_data, test_data = loader.load_data("./data/mnist.pkl.gz")
 net = network.Network([784, 16, 16, 10])
 
 if __name__ == '__main__':
