@@ -78,7 +78,7 @@ class Network:
 
         :returns: The number of test inputs that the neural network outputs a correct result for.
         """
-        test_results = [np.argmax(self.compute(x), y) for x, y in test_data]
+        test_results = [(np.argmax(self.compute(x)), y) for x, y in test_data]
         return sum(int(x == y) for x, y in test_results)
 
     def compute(self, input: np.ndarray[int]) -> np.ndarray:
@@ -114,6 +114,7 @@ class Network:
                           as a list of tuples (x, y), where x is a numpy array of 784-dimensional numpy arrays, and y is
                           the corresponding classifaction of x.
         """
+        print("Starting training...")
         for i in range(0, epochs):
             random.shuffle(training_data)
             mini_batches = [training_data[j:j + batch_size] for j in range(0, len(training_data), batch_size)]
@@ -138,20 +139,24 @@ class Network:
         :param learning_rate: The learning rate of the network.
         """
         # initialise matrices for gradients of weights and biases per layer
-        nabla_w = [np.zeros((layer.input_size, len(layer.neurons))) for layer in self.layers]
-        nabla_b = [np.zeros(len(layer.neurons)) for layer in self.layers]
+        nabla_w = [np.zeros((len(layer.neurons), layer.input_size)) for layer in self.layers]
+        nabla_b = [np.zeros(784), np.zeros(16), np.zeros(10)]
 
         # apply backpropagation to get updated weights and biases
         for x, y in mini_batch:
             delta_nabla_w, delta_nabla_b = self.backpropagate(x, y)
             nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-            nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+            nabla_b = [nb + dnb.transpose() for nb, dnb in zip(nabla_b, delta_nabla_b)]
 
         # update weights and biases based on mini batch
-        for layer_weights, layer_biases, layer in zip(nabla_w, nabla_b, self.layers):
-            for weights, bias, neuron in zip(layer_weights, layer_biases, layer.neurons):
-                neuron.weights -= (learning_rate / len(mini_batch)) * weights
-                neuron.bias -= (learning_rate / len(mini_batch)) * bias
+        for i in range(0, len(self.layers)):
+            layer = self.layers[i]
+            layer_weights, layer_biases = nabla_w[i], nabla_b[i]
+            for j in range(0, len(layer.neurons)):
+                neuron = layer.neurons[j]
+                neuron.bias -= (learning_rate / len(mini_batch)) * layer_biases[0][j]
+                for k in range(len(neuron.weights)):
+                    neuron.weights[k] -= (learning_rate / len(mini_batch)) * layer_weights[j][k]
 
     def backpropagate(self, x: np.ndarray[np.ndarray[int]], y: np.ndarray[int]) -> tuple:
         """TODO: fill this docstring in"""
@@ -175,11 +180,18 @@ class Network:
         nabla_b[-1] = delta
 
         # backpropagate delta through the layers
-        for i in range(len(self.layers) - 2, -1, -1):
-            weights = np.array([[weight for weight in neuron.weights] for neuron in self.layers[i].neurons]).transpose()
-            delta = np.dot(delta, weights) * sigmoid_prime(zs[i])
-            nabla_w[-1] = np.dot(delta, activations[-i].transpose())
-            nabla_b[-1] = delta
+        for i in range(len(self.layers) - 2, 0, -1):
+            # get delta and weight of (l + 1)th layer
+            weights = np.array([[weight for weight in neuron.weights] for neuron in self.layers[i + 1].neurons])
+            delta = np.dot(weights.transpose(), delta) * sigmoid_prime(zs[i])
+
+            nabla_w[i] = np.dot(delta, activations[i].transpose()).transpose()
+            nabla_b[i] = delta
+
+        weights = np.array([[weight for weight in neuron.weights] for neuron in self.layers[0].neurons])
+        delta = np.dot(weights.transpose(), delta) * sigmoid_prime(x)
+        nabla_w[0] = np.dot(delta, activations[0].transpose()).transpose()
+        nabla_b[0] = delta
 
         return nabla_w, nabla_b
 
