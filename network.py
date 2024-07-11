@@ -159,7 +159,21 @@ class Network:
                     neuron.weights[k] -= (learning_rate / len(mini_batch)) * layer_weights[j][k]
 
     def backpropagate(self, x: np.ndarray[np.ndarray[int]], y: np.ndarray[int]) -> tuple:
-        """TODO: fill this docstring in"""
+        """Apply the backpropagation algorithm to the neural network using the test input x and the
+        label y.
+
+        First, the weighted inputs and activations of each neuron are calculated and recorded through a single
+        forward pass in the network. Once the output layer is reached, the backpropagation algorithms are applied
+        backwards to the input layer to calculate the partial derivatives of the cost function
+        with respect to the weights and biases. These partial derivatives are then recorded in matrices and returned.
+
+        :param x: The test input, consisting of a 784-dimensional array of ints representing the brightness of a
+                  pixel in the test image.
+        :param y: The label, consisting of a 10-dimensional unit vector where non-zero index is the digit of the
+                  image.
+        :returns: A 2-tuple (nabla_w, nabla_b) representing the changes in weights and the changes in biases
+                  respectively.
+        """
         nabla_w = [np.zeros((layer.input_size, len(layer.neurons))) for layer in self.layers]
         nabla_b = [np.zeros(len(layer.neurons)) for layer in self.layers]
 
@@ -174,7 +188,7 @@ class Network:
             activations.append(input)
             zs.append(z)
 
-        # at this point, input is the final output of the network and z is the final weighted input of the network.
+        # at this point, input is the final output and zs[-1] is the final weighted input of the network.
         # we can use it to compute the error in the output layer.
         delta = cost_derivative(input, y) * sigmoid_prime(zs[-1])
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
