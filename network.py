@@ -1,8 +1,9 @@
 """Contains the neural network."""
 from typing import Optional
 
-import numpy as np
 import random
+from PIL import Image
+import numpy as np
 
 
 class Neuron:
@@ -80,6 +81,21 @@ class Network:
         """
         test_results = [(np.argmax(self.compute(x)), y) for x, y in test_data]
         return sum(int(x == y) for x, y in test_results)
+
+    def test_one(self, testing_data: list[tuple[np.ndarray, int]]) -> tuple:
+        """
+        Open a random test image and apply the network to it.
+
+        :param testing_data: The testing data. This is represented as a list of tuples (x, y), where x is a numpy
+                             array of 784-dimensional numpy arrays, and y is the corresponding classifaction of x.
+        :return: a 2-tuple (guess, ans), where guess is the output from the neural network, and ans is the label of the
+                 testing image.
+        """
+        image_data = random.choice(testing_data)
+        image = Image.fromarray((image_data[0].reshape(28, 28) * 255).astype(np.uint8), 'L')
+        image.show()
+
+        return np.argmax(self.compute(image_data[0])), image_data[1]
 
     def compute(self, input: np.ndarray[int]) -> np.ndarray:
         """Apply the neural network to the given input.
