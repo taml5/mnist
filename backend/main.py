@@ -12,15 +12,13 @@ HIDDEN_LAYER_SIZE = 16
 
 training_data, validation_data, test_data = loader.load_data("./backend/data/mnist.pkl.gz")
 net = network.Network([784, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE, 10])
-rate = net.evaluate(test_data)
 
 app = Flask(__name__)
 CORS(app)
 
 @app.route('/evaluate')
 def evaluate():
-    rate = net.evaluate(test_data)
-    return jsonify({"rate": rate})
+    return jsonify({"rate": net.evaluate(test_data)})
 
 @app.route('/train', methods = ['POST'])
 def train():
@@ -43,4 +41,4 @@ def test_one():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
