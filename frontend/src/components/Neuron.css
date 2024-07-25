@@ -1,0 +1,7 @@
+.neuron {
+  width: 60px;
+  height: 60px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}

@@ -1,33 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect, act } from 'react';
+import './App.css';
+import Infoboard from './components/Infoboard';
+import Neuron from './components/Neuron';
+import ControlMenu from './components/ControlMenu';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [certainty, setCertainty] = useState<number>(NaN);
+  const [pred, setPred] = useState<number>(NaN);
+  const [actual, setActual] = useState<number>(NaN);
+  const [rate, setRate] = useState<number>(NaN);
+  const [prevRate, setPrevRate] = useState<number>(NaN);
+  const [activations, setActivations] = useState<Array<number>>(Array(10).fill(0.0));
+  const [imgSrc, setImgSrc] = useState<string>("./placeholder.png");
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <h1>MNIST Neural Network</h1>
+      <div className="port">
+        <img src={imgSrc === "./placeholder.png" ? imgSrc : "data:image/png;base64," + imgSrc}></img>
+        <Infoboard certainty={certainty} pred={pred} actual={actual} rate={rate} prevRate={prevRate}/>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="neurons">
+        {activations.map((activation, i) => <Neuron digit={i} activation={activation} key={i}/>)}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <ControlMenu
+        setCertainty={setCertainty}
+        setPred={setPred}
+        setActual={setActual}
+        setRate={setRate}
+        currRate={rate}
+        setPrevRate={setPrevRate}
+        setActivations={setActivations}
+        setImgSrc={setImgSrc}
+      />
     </>
   )
 }
