@@ -1,10 +1,10 @@
 """The main file where the neural network is loaded."""
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 
 import network
 import loader
 
-EPOCHS = 10
+EPOCHS = 3
 BATCH_SIZE = 32
 LEARNING_RATE = 3
 HIDDEN_LAYER_SIZE = 16
@@ -28,10 +28,11 @@ def evaluate():
 def train():
     data = request.form
     net.train(training_data=training_data,
-              epochs=data["epochs"],
-              batch_size=data["batch_size"],
-              learning_rate=data["learning_rate"],
-              test_data=test_data if data["test"] == True else None)
+              epochs=data["epochs"] if "epochs" in data else EPOCHS,
+              batch_size=data["batch_size"] if "batch_size" in data else BATCH_SIZE,
+              learning_rate=data["learning_rate"] if "learning_rate" in data else LEARNING_RATE,
+              test_data=test_data if "test" in data and data["test"] == True else None)
+    return Response(status=200)
     
 @app.route('/test')
 def test_one():
