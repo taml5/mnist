@@ -1,5 +1,6 @@
 """The main file where the neural network is loaded."""
 from flask import Flask, request, jsonify, Response
+from flask_cors import CORS
 
 import network
 import loader
@@ -14,31 +15,29 @@ net = network.Network([784, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE, 10])
 rate = net.evaluate(test_data)
 
 app = Flask(__name__)
-
-@app.route('/')
-def init():
-    return jsonify({"rate": rate})
+CORS(app)
 
 @app.route('/evaluate')
 def evaluate():
     rate = net.evaluate(test_data)
     return jsonify({"rate": rate})
 
-@app.route('/train')
+@app.route('/train', methods = ['POST'])
 def train():
-    data = request.form
+    data = request.get_json()
     net.train(training_data=training_data,
               epochs=data["epochs"] if "epochs" in data else EPOCHS,
               batch_size=data["batch_size"] if "batch_size" in data else BATCH_SIZE,
               learning_rate=data["learning_rate"] if "learning_rate" in data else LEARNING_RATE,
-              test_data=test_data if "test" in data and data["test"] == True else None)
+              test_data=None)
     return Response(status=200)
     
 @app.route('/test')
 def test_one():
     guess, ans, image = net.test_one(test_data)
     return jsonify({
-        "guess": guess.tolist(),
+        "activations": guess.tolist(),
+        "guess": max(range(len(guess)), key=guess.__getitem__),
         "answer": str(ans),
         "image": image
     })
