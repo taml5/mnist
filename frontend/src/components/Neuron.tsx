@@ -1,5 +1,5 @@
-import './Neuron.css';
 import { Tooltip } from '@mui/material';
+import './Neuron.css';
 
 interface INeuron {
     digit: number,

@@ -1,8 +1,8 @@
-import { useState, useEffect, act } from 'react';
-import './App.css';
+import { useState } from 'react';
 import Infoboard from './components/Infoboard';
 import Neuron from './components/Neuron';
 import ControlMenu from './components/ControlMenu';
+import './App.css';
 
 function App() {
   const [certainty, setCertainty] = useState<number>(NaN);
