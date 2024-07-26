@@ -56,8 +56,11 @@ function ResetButton(prop: IControlMenu ) {
                                 prop.setActual(NaN);
                                 prop.setActivations(Array(10).fill(0.0));
                                 prop.setImgSrc("./placeholder.png");
-                                prop.setPrevRate(prop.currRate);
-                                prop.setRate(NaN);
+
+                                if (!isNaN(prop.currRate)) {
+                                    prop.setPrevRate(prop.currRate);
+                                    prop.setRate(NaN);
+                                }
                             } catch (error) {
                                 console.log(error);
                             }

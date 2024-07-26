@@ -56,7 +56,9 @@ function ControlMenu(prop: IControlMenu) {
                                 const response = await fetch(import.meta.env.VITE_API_URL + '/evaluate');
                                 if (response) {
                                     const data = await response.json();
-                                    prop.setPrevRate(prop.currRate);
+                                    if (!isNaN(prop.currRate) && data.rate != prop.currRate) {
+                                        prop.setPrevRate(prop.currRate);
+                                    }
                                     prop.setRate(data.rate);
                                 }
                             } catch (error) {
