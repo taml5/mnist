@@ -1,0 +1,6 @@
+.infoboard {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-content: center;
+}

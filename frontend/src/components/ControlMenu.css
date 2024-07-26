@@ -1,0 +1,31 @@
+.control-menu {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttons {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-evenly;
+    column-gap: 2rem;
+}
+
+.sliders {
+    padding-inline: 1rem;
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    p {
+        width: 40%;
+    }
+}
+
+.slider {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+    column-gap: 2rem;
+}

@@ -1,0 +1,23 @@
+#root {
+  max-width: 864px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.port {
+  display: flex;
+  gap: 3rem;
+  padding: 1rem;
+
+  img {
+    width: 280px;
+    border-radius: 10px;
+  }
+}
+
+.neurons {
+  display: flex;
+  padding: 1rem;
+  justify-content: space-between;
+}

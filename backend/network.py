@@ -1,10 +1,12 @@
 """Contains the neural network."""
-from typing import Optional
-
+import io
 import random
-from PIL import Image
+
 import numpy as np
 
+from base64 import encodebytes
+from PIL import Image
+from typing import Optional
 
 class Neuron:
     """A neuron in the network.
@@ -79,10 +81,10 @@ class Network:
 
         :returns: The number of test inputs that the neural network outputs a correct result for.
         """
-        test_results = [(np.argmax(self.compute(x)), y) for x, y in test_data]
+        test_results = [(np.argmax(self._compute(x)), y) for x, y in test_data]
         return sum(int(x == y) for x, y in test_results)
 
-    def test_one(self, testing_data: list[tuple[np.ndarray, int]]) -> tuple:
+    def test_one(self, testing_data: list[tuple[np.ndarray, int]]) -> tuple[np.ndarray, int, bytes]:
         """
         Open a random test image and apply the network to it.
 
@@ -93,11 +95,13 @@ class Network:
         """
         image_data = random.choice(testing_data)
         image = Image.fromarray((image_data[0].reshape(28, 28) * 255).astype(np.uint8), 'L')
-        image.show()
+        byte_arr = io.BytesIO()
+        image.save(byte_arr, format="PNG")
+        encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii')
 
-        return np.argmax(self.compute(image_data[0])), image_data[1]
+        return self._compute(image_data[0]), image_data[1], encoded_img
 
-    def compute(self, input: np.ndarray[int]) -> np.ndarray:
+    def _compute(self, input: np.ndarray[int]) -> np.ndarray:
         """Apply the neural network to the given input.
 
         Preconditions:
@@ -136,14 +140,14 @@ class Network:
             mini_batches = [training_data[j:j + batch_size] for j in range(0, len(training_data), batch_size)]
 
             for mini_batch in mini_batches:
-                self.train_on_batch(mini_batch, learning_rate)
+                self._train_on_batch(mini_batch, learning_rate)
 
             if test_data is not None:
                 print(f"Epoch {i} of {epochs}: {self.evaluate(test_data)} out of {len(test_data)} inputs")
             else:
                 print(f"Epoch {i} of {epochs} completed")
 
-    def train_on_batch(self,
+    def _train_on_batch(self,
                        mini_batch: list[tuple[np.ndarray[np.ndarray[int]], np.ndarray[int]]],
                        learning_rate: float) -> None:
         """Update the weights and biases of the neural network via gradient descent using backpropagation
@@ -160,7 +164,7 @@ class Network:
 
         # apply backpropagation to get updated weights and biases
         for x, y in mini_batch:
-            delta_nabla_w, delta_nabla_b = self.backpropagate(x, y)
+            delta_nabla_w, delta_nabla_b = self._backpropagate(x, y)
             nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
             nabla_b = [nb + dnb.transpose() for nb, dnb in zip(nabla_b, delta_nabla_b)]
 
@@ -174,7 +178,7 @@ class Network:
                 for k in range(len(neuron.weights)):
                     neuron.weights[k] -= (learning_rate / len(mini_batch)) * layer_weights[j][k]
 
-    def backpropagate(self, x: np.ndarray[np.ndarray[int]], y: np.ndarray[int]) -> tuple:
+    def _backpropagate(self, x: np.ndarray[np.ndarray[int]], y: np.ndarray[int]) -> tuple:
         """Apply the backpropagation algorithm to the neural network using the test input x and the
         label y.
 
