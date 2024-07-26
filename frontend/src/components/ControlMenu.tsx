@@ -102,7 +102,7 @@ function ControlMenu(prop: IControlMenu) {
                 </Tooltip>
                 <Tooltip 
                     title="Train the neural network with the below hyperparameters. This could take a while."
-                    placement="top-start"
+                    placement="top-end"
                     enterDelay={1000}
                     color="secondary"
                 >
