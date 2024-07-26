@@ -39,7 +39,7 @@ function ControlMenu(prop: IControlMenu) {
             <div className="buttons">
                 <Tooltip 
                     title="Evaluate the number of successful predictions over the entire testing image set."
-                    placement="left"
+                    placement="top-start"
                     enterDelay={1000}
                 >
                     <Button 
@@ -72,6 +72,7 @@ function ControlMenu(prop: IControlMenu) {
                 </Tooltip>
                 <Tooltip 
                     title="Test the neural network on a single random input picture."
+                    placement="top"
                     enterDelay={1000}
                 >
                     <Button 
@@ -101,7 +102,7 @@ function ControlMenu(prop: IControlMenu) {
                 </Tooltip>
                 <Tooltip 
                     title="Train the neural network with the below hyperparameters. This could take a while."
-                    placement="right"
+                    placement="top-start"
                     enterDelay={1000}
                     color="secondary"
                 >
