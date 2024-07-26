@@ -16,6 +16,7 @@ function App() {
   return (
     <>
       <h1>MNIST Neural Network</h1>
+      <p>A feedforward network with 2 hidden layers, each with 16 neurons, aimed to recognise handwritten digits from the MNIST dataset.</p>
       <div className="port">
         <img src={imgSrc === "./placeholder.png" ? imgSrc : "data:image/png;base64," + imgSrc}></img>
         <Infoboard certainty={certainty} pred={pred} actual={actual} rate={rate} prevRate={prevRate}/>
@@ -33,6 +34,11 @@ function App() {
         setActivations={setActivations}
         setImgSrc={setImgSrc}
       />
+      <footer>
+        <a href="https://www.github.com/taml5/mnist" target="_blank">
+          <img src="./github-mark.svg" />
+        </a>
+      </footer>
     </>
   )
 }

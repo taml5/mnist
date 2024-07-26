@@ -15,6 +15,7 @@
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  margin: 0;
 }
 
 body {
@@ -25,3 +26,13 @@ body {
   min-height: 100vh;
 }
 
+
+footer {
+  padding-top: 1rem;
+  color: rgb(255, 255, 255, 0.2);
+  
+  img {
+    opacity: 50%;
+    max-width: 2rem;
+  }
+}
