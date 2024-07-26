@@ -6,11 +6,3 @@ obtained from Michael Nielsen's
 
 The neural network uses stochasitc gradient descent to train the model. The neural network will not be 
 maintained across instances.  
-
-## Usage
-
-From `mnist` as the working directory, run
-
-```
-$ python3 main.py
-```
