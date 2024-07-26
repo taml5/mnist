@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Button, Slider, ThemeProvider, Tooltip, createTheme } from "@mui/material";
 import "./ControlMenu.css";
+import ResetButton from "./ResetButton";
 
 const theme = createTheme({
     palette: {
@@ -15,7 +16,7 @@ const theme = createTheme({
     }
 });
 
-interface IControlMenu {
+export interface IControlMenu {
     setCertainty: Dispatch<SetStateAction<number>>,
     setPred: Dispatch<SetStateAction<number>>,
     setActual: Dispatch<SetStateAction<number>>,
@@ -192,6 +193,16 @@ function ControlMenu(prop: IControlMenu) {
                 </div>
             </div>
         </ThemeProvider>
+        <ResetButton
+            setCertainty={prop.setCertainty}
+            setPred={prop.setPred}
+            setActual={prop.setActual}
+            setRate={prop.setRate}
+            currRate={prop.currRate}
+            setPrevRate={prop.setPrevRate}
+            setActivations={prop.setActivations}
+            setImgSrc={prop.setImgSrc}
+        />
     </div>)
 }
 

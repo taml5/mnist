@@ -40,5 +40,10 @@ def test_one():
         "image": image
     })
 
+@app.route('/reset')
+def reset():
+    net.__init__([784, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE, 10])
+    return Response(status=200)
+
 if __name__ == '__main__':
     app.run()

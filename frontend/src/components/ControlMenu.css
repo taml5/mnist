@@ -13,7 +13,7 @@
 }
 
 .sliders {
-    padding: 1rem;
+    padding-inline: 1rem;
     display: flex;
     flex-direction: column;
     width: 60%;
