@@ -10,7 +10,7 @@ BATCH_SIZE = 32
 LEARNING_RATE = 3
 HIDDEN_LAYER_SIZE = 16
 
-training_data, validation_data, test_data = loader.load_data("./backend/data/mnist.pkl.gz")
+training_data, validation_data, test_data = loader.load_data("./data/mnist.pkl.gz")
 net = network.Network([784, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE, 10])
 
 app = Flask(__name__)
