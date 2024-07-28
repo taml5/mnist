@@ -21,7 +21,7 @@ function ResetButton(prop: IControlMenu ) {
     if (!confirm) {
         return (
             <Tooltip 
-                    title="Reset the neural network. This will discard any training performed!"
+                    title="Reset the neural network with random weights. This will discard any training performed!"
                     placement="right"
             >
                 <Button 
@@ -49,7 +49,9 @@ function ResetButton(prop: IControlMenu ) {
                         onClick={async () => {
                             setConfirm(false);
                             try {
-                                await fetch(import.meta.env.VITE_API_URL + '/reset');
+                                await fetch(import.meta.env.VITE_API_URL + '/reset', {
+                                    method: "POST"
+                                });
                                 
                                 prop.setCertainty(NaN);
                                 prop.setPred(NaN);

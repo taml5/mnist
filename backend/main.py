@@ -16,7 +16,7 @@ net = network.Network([784, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE, 10])
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/evaluate')
+@app.route('/evaluate', methods = ['GET'])
 def evaluate():
     return jsonify({"rate": net.evaluate(test_data)})
 
@@ -30,7 +30,7 @@ def train():
               test_data=None)
     return Response(status=200)
     
-@app.route('/test')
+@app.route('/test', methods = ['GET'])
 def test_one():
     guess, ans, image = net.test_one(test_data)
     return jsonify({
@@ -40,7 +40,7 @@ def test_one():
         "image": image
     })
 
-@app.route('/reset')
+@app.route('/reset', methods = ['POST'])
 def reset():
     net.__init__([784, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE, 10])
     return Response(status=200)

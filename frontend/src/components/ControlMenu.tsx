@@ -119,14 +119,14 @@ function ControlMenu(prop: IControlMenu) {
                             try {
                                 await fetch(import.meta.env.VITE_API_URL + '/train', {
                                     method: "POST",
+                                    headers: {
+                                        "Content-type": "application/json; charset=UTF-8"
+                                    },
                                     body: JSON.stringify({
                                         "epochs": epochs,
                                         "batch_size": 2 ** batchSize,
                                         "learning_rate": learningRate / 20
-                                    }),
-                                    headers: {
-                                        "Content-type": "application/json; charset=UTF-8"
-                                    }
+                                    })
                                 });
                             } catch (error) {
                                 console.log(error);
